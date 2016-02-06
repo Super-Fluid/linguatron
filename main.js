@@ -23,6 +23,8 @@ $(document).ready(function() {
         clickX.length = 0;
         clickY.length = 0;
         clickDrag.length = 0;
+        
+        $("#new_word").val('');
     });
     
     var road = {"xs":[21,23,27,36,51,70,93,119,149,166,186,208,218,232,242,253,263,273,284,292,299,305,311,316,323,329,338,348,355,360,364,365,366,366,367,368,369,36,37,50,69,94,121,151,178,198,217,232,242,253,263,272,282,289,297,303,309,317,321,329,336,343,350,355,361,367,370,372,373,373],"ys":[131,131,131,131,131,131,131,131,131,131,131,132,134,137,140,141,142,142,142,142,142,142,142,142,141,139,137,136,134,134,134,134,134,133,133,132,132,254,254,254,254,254,254,254,254,256,259,262,263,265,265,265,265,265,264,263,263,262,261,261,260,259,258,257,256,255,255,254,254,253],"drags":[false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true],"value":"road"};
