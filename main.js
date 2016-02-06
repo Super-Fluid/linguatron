@@ -14,7 +14,7 @@ $(document).ready(function() {
     });
     
     $("#record-button").on("click",function(){
-        var symbol = { xs:clickX, ys:clickY, drags:clickDrag, value:null };
+        var symbol = { xs:clickX.slice(), ys:clickY.slice(), drags:clickDrag.slice(), value:null };
         storedSymbols.push(symbol);
         
         // now clear the canvas
