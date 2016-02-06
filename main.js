@@ -90,7 +90,7 @@ function makeMiniCanvas(id,symbol) {
 function searchForMatchingSymbols() {
     $("#selectWord").empty(); // remove old matches
     var currentSymbol = { xs:clickX, ys:clickY, drags:clickDrag, value:""}
-    console.log(JSON.stringify(currentSymbol));
+    //console.log(JSON.stringify(currentSymbol));
     for (index = 0; index < storedSymbols.length; ++index) {
         if (compareSignatures(storedSymbols[index], currentSymbol)) {
             makeMiniCanvas("option"+index,storedSymbols[index]);
@@ -152,6 +152,5 @@ function compareSignatures(symbol1,symbol2) {
             }
         }
     }
-    console.log(symbol1.value +"  "+error);
     return(error<10);
 }
