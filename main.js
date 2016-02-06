@@ -88,12 +88,22 @@ function searchForMatchingSymbols() {
     }
 }
 
+
 function calculateSignature(symbol) {
-    var xs = symbol.xs.slice();
-    var ys = symbol.ys.slice();
+    var xs = symbol.xs.slice(0,1);
+    var ys = symbol.ys.slice(0,1);
     
-    // take points only sparsely, so speed doesn't matter.
-    // TODO
+    // remove points which are near to previous points
+    // starting with the second point
+    for (i = 1; i < symbol.xs.length; ++i) {
+        var x_distinct = Math.abs(symbol.xs[i-1] - symbol.xs[i]) > 2;
+        var y_distinct = Math.abs(symbol.ys[i-1] - symbol.ys[i]) > 2;
+        if (x_distinct && y_distinct) {
+            xs.push(symbol.xs[i]);
+            ys.push(symbol.ys[i]);
+        }
+    }
+    
     
     // make histogram
     var hist = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
