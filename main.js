@@ -8,6 +8,9 @@ $(document).ready(function() {
     $("#clear-button").on("click",function(){
         $("#selectWord").empty();
         clearCanvas();
+        clickX.length = 0;
+        clickY.length = 0;
+        clickDrag.length = 0;
     });
     
     $("#record-button").on("click",function(){
@@ -16,6 +19,21 @@ $(document).ready(function() {
 
 
 });
+
+function miniCanvas(id) {
+	var canvasDiv = document.getElementById('canvasDiv');
+	canvas = document.createElement(id);
+	canvas.setAttribute('width', canvasWidth);
+	canvas.setAttribute('height', canvasHeight);
+	canvas.setAttribute('id', id);
+	canvasDiv.appendChild(canvas);
+	if(typeof G_vmlCanvasManager != 'undefined') {
+		canvas = G_vmlCanvasManager.initElement(canvas);
+	}
+	context = canvas.getContext("2d"); // Grab the 2d canvas context
+	// Note: The above code is a workaround for IE 8 and lower. Otherwise we could have used:
+	//     context = document.getElementById('canvas').getContext("2d");
+}
 
 function calculateSignature(symbol) {
 
