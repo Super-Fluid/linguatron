@@ -82,6 +82,9 @@ function makeMiniCanvas(id,symbol) {
 	
 	
 	con.globalAlpha = 1; // No IE support
+	
+	con.font="20px Georgia";
+    con.fillText(symbol.value,10,20);
 }
 
 function searchForMatchingSymbols() {
