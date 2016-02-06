@@ -24,6 +24,8 @@ var canvas;
 var context;
 var canvasWidth = 400;
 var canvasHeight = 400;
+var miniCanvasWidth = 200;
+var miniCanvasHeight = 200;
 var padding = 25;
 var lineWidth = 8;
 var colorPurple = "#000000";
@@ -140,7 +142,7 @@ function prepareCanvas()
 		var mouseX = e.pageX - this.offsetLeft;
 		var mouseY = e.pageY - this.offsetTop;
 		
-		if(mouseX < drawingAreaX) // Left of the drawing area
+		if(false) // Left of the drawing area
 		{
 			if(mouseX > mediumStartX)
 			{
@@ -155,7 +157,7 @@ function prepareCanvas()
 				}
 			}
 		}
-		else if(mouseX > drawingAreaX + drawingAreaWidth) // Right of the drawing area
+		else if(false) // Right of the drawing area
 		{
 			if(mouseY > toolHotspotStartY)
 			{
@@ -187,7 +189,7 @@ function prepareCanvas()
 				}
 			}
 		}
-		else if(mouseY > drawingAreaY && mouseY < drawingAreaY + drawingAreaHeight)
+		else if(true)
 		{
 			// Mouse click location on drawing area
 		}
@@ -249,23 +251,6 @@ function redraw()
 	
 	var locX;
 	var locY;
-	if(curTool == "crayon")
-	{
-	}
-	else if(curTool == "marker")
-	{
-	}
-	else if(curTool == "eraser")
-	{
-	}else{
-		alert("Error: Current Tool is undefined");
-	}
-	
-
-
-	
-	// Keep the drawing in the drawing area
-
 		
 	var radius;
 	var i = 0;

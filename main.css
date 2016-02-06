@@ -23,7 +23,9 @@ span.top-menu-item {
 }
 
 .wordOption {
-    width:100px;
-    height:100px;
-    border: 1px solid #eeeeee;
+    border: 2px solid #eeeeee;
+}
+
+#selectWord {
+    text-align:center;
 }

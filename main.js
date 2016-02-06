@@ -29,19 +29,54 @@ $(document).ready(function() {
 
 });
 
-function miniCanvas(id) {
-	var canvasDiv = document.getElementById('canvasDiv');
-	canvas = document.createElement(id);
-	canvas.setAttribute('width', canvasWidth);
-	canvas.setAttribute('height', canvasHeight);
-	canvas.setAttribute('id', id);
-	canvasDiv.appendChild(canvas);
+function makeMiniCanvas(id,symbol) {
+	var canvasDiv = document.getElementById('selectWord');
+	c = document.createElement("canvas");
+	c.setAttribute('width', miniCanvasWidth);
+	c.setAttribute('height', miniCanvasHeight);
+	c.setAttribute('id', id);
+	canvasDiv.appendChild(c);
+	$("#"+id).addClass("wordOption");
 	if(typeof G_vmlCanvasManager != 'undefined') {
-		canvas = G_vmlCanvasManager.initElement(canvas);
+		c = G_vmlCanvasManager.initElement(c);
 	}
-	context = canvas.getContext("2d"); // Grab the 2d canvas context
+	con = c.getContext("2d"); // Grab the 2d canvas context
 	// Note: The above code is a workaround for IE 8 and lower. Otherwise we could have used:
 	//     context = document.getElementById('canvas').getContext("2d");
+	
+	var locX;
+	var locY;
+	
+	var localclickX = symbol.xs;
+	var localclickY = symbol.ys;
+	var localclickDrag = symbol.drags;
+		
+	var radius;
+	var i = 0;
+	for(; i < localclickX.length; i++)
+	{		
+
+		radius = 5;
+		context.beginPath();
+		if(localclickDrag[i] && i){
+			con.moveTo(localclickX[i-1], localclickY[i-1]);
+		}else{
+			con.moveTo(localclickX[i], localclickY[i]);
+		}
+		con.lineTo(localclickX[i], localclickY[i]);
+		con.closePath();
+		
+
+		con.strokeStyle = clickColor[1];
+		con.lineJoin = "round";
+		con.lineWidth = radius;
+		con.stroke();
+		
+	}
+	//context.globalCompositeOperation = "source-over";// To erase instead of draw over with white
+	
+	
+	con.globalAlpha = 1; // No IE support
 }
 
 function searchForMatchingSymbols() {
