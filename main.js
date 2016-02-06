@@ -104,7 +104,7 @@ function calculateSignature(symbol) {
         } else if (x < 0) {
             x = 0;
         }
-        var y = ys[i]/100;
+        var y = Math.floor(ys[i]/100);
         if (y > 3) {
             y = 3;
         } else if (y < 0) {
@@ -123,7 +123,7 @@ function compareSignatures(symbol1,symbol2) {
     for (i = 0; i < 4; ++i) {
         for (j = 0; j < 4; ++j) {
             var diff = Math.abs(hist1[i][j] - hist2[i][j]);
-            if (diff > 20) {
+            if (diff > 5) {
                 error++;
             }
         }
