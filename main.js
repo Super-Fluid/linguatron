@@ -3,6 +3,7 @@
 var storedSymbols = [];
 var currentSymbol = undefined;
 var paint = false;
+var storedSymbols = [];
 
 $(document).ready(function() {
     $("#clear-button").on("click",function(){
@@ -14,7 +15,15 @@ $(document).ready(function() {
     });
     
     $("#record-button").on("click",function(){
+        var symbol = { xs:clickX, ys:clickY, drags:clickDrag, value:null };
+        storedSymbols.push(symbol);
         
+        // now clear the canvas
+        $("#selectWord").empty();
+        clearCanvas();
+        clickX.length = 0;
+        clickY.length = 0;
+        clickDrag.length = 0;
     });
 
 
@@ -35,12 +44,16 @@ function miniCanvas(id) {
 	//     context = document.getElementById('canvas').getContext("2d");
 }
 
-function calculateSignature(symbol) {
+function searchForMatchingSymbols() {
+    
+}
 
+function calculateSignature(symbol) {
+    return undefined;
 }
 
 function compareSignatures(symbol,symbol) {
-
+    return true;
 }
 
 function appendMatches(symbols) {
