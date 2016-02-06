@@ -89,11 +89,46 @@ function searchForMatchingSymbols() {
 }
 
 function calculateSignature(symbol) {
-    return undefined;
+    var xs = symbol.xs.slice();
+    var ys = symbol.ys.slice();
+    
+    // take points only sparsely, so speed doesn't matter.
+    // TODO
+    
+    // make histogram
+    var hist = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+    for (i = 0; i < xs.length; ++i) {
+        var x = Math.floor(xs[i]/100);
+        if (x > 3) {
+            x = 3;
+        } else if (x < 0) {
+            x = 0;
+        }
+        var y = ys[i]/100;
+        if (y > 3) {
+            y = 3;
+        } else if (y < 0) {
+            y = 0;
+        }
+        
+        hist[x][y]++;
+    }
+    return hist;
 }
 
 function compareSignatures(symbol1,symbol2) {
-    return true;
+    var hist1 = calculateSignature(symbol1);
+    var hist2 = calculateSignature(symbol2);
+    var error = 0;
+    for (i = 0; i < 4; ++i) {
+        for (j = 0; j < 4; ++j) {
+            var diff = Math.abs(hist1[i][j] - hist2[i][j]);
+            if (diff > 20) {
+                error++;
+            }
+        }
+    }
+    return(error<3);
 }
 
 function appendMatches(symbols) {
