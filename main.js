@@ -24,8 +24,13 @@ $(document).ready(function() {
         clickY.length = 0;
         clickDrag.length = 0;
     });
-
-
+    
+    
+    var cup = {"xs":[130,130,130,130,130,130,130,130,130,130,130,130,130,130,130,130,130,130,130,130,130,130,130,131,132,138,148,164,181,195,204,211,216,218,220,222,224,225,227,229,230,231,232,233,233,233,235,239,246,250,254,256,256,256,256,256,256,255,255,255,254,253,252],"ys":[118,119,120,124,133,158,199,236,267,297,319,329,336,340,344,346,346,347,348,349,351,352,353,353,353,352,352,351,351,351,351,351,351,351,351,351,351,351,351,351,351,351,351,351,349,345,322,290,242,210,189,165,155,144,138,131,127,124,122,121,121,121,121],"drags":[false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true],"value":"cup"}
+    var happy = {"xs":[154,154,154,154,154,153,152,151,264,264,264,264,264,264,264,264,264,264,264,264,264,264,263,263,262,262,262,262,262,262,262,261,261,261,260,61,61,65,71,82,95,110,119,131,140,147,156,165,175,187,196,208,219,235,246,260,271,277,284,287,289,291,293,298,302,307,309,311,312,313,313,313,314,315,317,318,318,319,319,320,322,324,325,326,327,328,328],"ys":[141,141,138,132,125,121,115,113,142,141,139,136,133,131,130,129,128,127,125,125,124,123,122,121,120,119,119,118,117,115,114,113,112,111,111,265,266,271,278,289,301,314,321,330,334,337,339,340,340,340,341,341,341,341,340,336,329,326,323,321,320,318,315,307,300,291,284,280,277,277,276,275,271,268,265,263,261,261,260,258,257,254,253,252,251,251,250],"drags":[false,true,true,true,true,true,true,true,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true],"value":"happy"};
+    var roof = {"xs":[57,59,72,107,150,184,225,251,269,280,292,298,303,311,319,323,327,331,334,338,342,346,349,353,356,358,360,362,363,364,364,364,364,364,358,353,344,338,335,333,333,333,333,333,333,333,333,333,333,333,333,333,333,332,332,332,332,332,332,332,331,330,329,329,329,329,329,329,329,329],"ys":[64,64,64,64,64,64,64,64,64,64,64,64,64,64,64,64,64,65,65,66,67,67,67,67,67,67,67,67,67,67,68,69,70,72,81,96,121,147,165,184,202,219,230,241,248,255,258,262,265,267,269,272,277,287,296,301,306,308,311,315,317,319,324,327,328,330,331,332,333,333],"drags":[false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true],"value":"roof"};
+    storedSymbols = [happy,cup,roof];
+    
 });
 
 function makeMiniCanvas(id,symbol) {
@@ -81,6 +86,7 @@ function makeMiniCanvas(id,symbol) {
 function searchForMatchingSymbols() {
     $("#selectWord").empty(); // remove old matches
     var currentSymbol = { xs:clickX, ys:clickY, drags:clickDrag, value:""}
+    console.log(JSON.stringify(currentSymbol));
     for (index = 0; index < storedSymbols.length; ++index) {
         if (compareSignatures(storedSymbols[index], currentSymbol)) {
             makeMiniCanvas("option"+index,storedSymbols[index]);
@@ -98,8 +104,8 @@ function calculateSignature(symbol) {
     // remove points which are near to previous points
     // starting with the second point
     for (i = 1; i < symbol.xs.length; ++i) {
-        var x_distinct = Math.abs(prev_x - symbol.xs[i]) > 0;
-        var y_distinct = Math.abs(prev_y - symbol.ys[i]) > 0;
+        var x_distinct = Math.abs(prev_x - symbol.xs[i]) > 1;
+        var y_distinct = Math.abs(prev_y - symbol.ys[i]) > 1;
         if (x_distinct && y_distinct) {
             xs.push(symbol.xs[i]);
             ys.push(symbol.ys[i]);
@@ -137,16 +143,10 @@ function compareSignatures(symbol1,symbol2) {
     for (i = 0; i < 4; ++i) {
         for (j = 0; j < 4; ++j) {
             var diff = Math.abs(hist1[i][j] - hist2[i][j]);
-            if (diff > 3) {
+            if (diff > 2) {
                 error++;
             }
         }
     }
-    return(error==0);
-}
-
-function appendMatches(symbols) {
-    symbols.foreach(function(symbol) {
-
-    });
+    return(error<2);
 }
