@@ -1,7 +1,6 @@
 // drawing thanks to http://www.williammalone.com/articles/create-html5-canvas-javascript-drawing-app/
 
 var storedSymbols = [];
-var currentSymbol = undefined;
 var paint = false;
 var storedSymbols = [];
 
@@ -56,14 +55,14 @@ function makeMiniCanvas(id,symbol) {
 	for(; i < localclickX.length; i++)
 	{		
 
-		radius = 5;
+		radius = 2.5;
 		context.beginPath();
 		if(localclickDrag[i] && i){
-			con.moveTo(localclickX[i-1], localclickY[i-1]);
+			con.moveTo(localclickX[i-1]/2, localclickY[i-1]/2);
 		}else{
-			con.moveTo(localclickX[i], localclickY[i]);
+			con.moveTo(localclickX[i]/2, localclickY[i]/2);
 		}
-		con.lineTo(localclickX[i], localclickY[i]);
+		con.lineTo(localclickX[i]/2, localclickY[i]/2);
 		con.closePath();
 		
 
@@ -80,14 +79,20 @@ function makeMiniCanvas(id,symbol) {
 }
 
 function searchForMatchingSymbols() {
-    
+    $("#selectWord").empty(); // remove old matches
+    var currentSymbol = { xs:clickX, ys:clickY, drags:clickDrag, value:""}
+    for (index = 0; index < storedSymbols.length; ++index) {
+        if (compareSignatures(storedSymbols[index], currentSymbol)) {
+            makeMiniCanvas("option"+index,storedSymbols[index]);
+        }
+    }
 }
 
 function calculateSignature(symbol) {
     return undefined;
 }
 
-function compareSignatures(symbol,symbol) {
+function compareSignatures(symbol1,symbol2) {
     return true;
 }
 
