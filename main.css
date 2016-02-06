@@ -1,19 +1,24 @@
 #canvas {
     height:400px;
     width:400px;
-    border: 1px solid #eeeeee;
-    margin:0 auto 0 auto;
+    border: 5px solid #eeeeee;
+    margin:10px auto 0 auto;
 }
 
 #canvasDiv {
     text-align:center;
 }
 
-div.top-menu-item {
+span.top-menu-item {
     border: 5px solid #efefef;
     background-color:  #eeeeee;
     border-radius: 5px;
     margin: 5px;
+    text-align: center;
+    width:45%;
+}
+
+#top-menu {
     text-align: center;
 }
 

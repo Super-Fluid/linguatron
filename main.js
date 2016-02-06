@@ -7,6 +7,7 @@ var paint = false;
 $(document).ready(function() {
     $("#clear-button").on("click",function(){
         $("#selectWord").empty();
+        clearCanvas();
     });
     
     $("#record-button").on("click",function(){
