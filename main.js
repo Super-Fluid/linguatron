@@ -92,15 +92,19 @@ function searchForMatchingSymbols() {
 function calculateSignature(symbol) {
     var xs = symbol.xs.slice(0,1);
     var ys = symbol.ys.slice(0,1);
+    var prev_x = xs[0];
+    var prev_y = ys[0];
     
     // remove points which are near to previous points
     // starting with the second point
     for (i = 1; i < symbol.xs.length; ++i) {
-        var x_distinct = Math.abs(symbol.xs[i-1] - symbol.xs[i]) > 2;
-        var y_distinct = Math.abs(symbol.ys[i-1] - symbol.ys[i]) > 2;
+        var x_distinct = Math.abs(prev_x - symbol.xs[i]) > 0;
+        var y_distinct = Math.abs(prev_y - symbol.ys[i]) > 0;
         if (x_distinct && y_distinct) {
             xs.push(symbol.xs[i]);
             ys.push(symbol.ys[i]);
+            prev_x = symbol.xs[i];
+            prev_y = symbol.ys[i];
         }
     }
     
@@ -133,12 +137,12 @@ function compareSignatures(symbol1,symbol2) {
     for (i = 0; i < 4; ++i) {
         for (j = 0; j < 4; ++j) {
             var diff = Math.abs(hist1[i][j] - hist2[i][j]);
-            if (diff > 5) {
+            if (diff > 3) {
                 error++;
             }
         }
     }
-    return(error<3);
+    return(error==0);
 }
 
 function appendMatches(symbols) {
