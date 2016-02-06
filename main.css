@@ -1,11 +1,11 @@
-#drawingboard {
+#canvas {
     height:400px;
     width:400px;
     border: 1px solid #eeeeee;
-    margin:0 -10px 0 -10px;
+    margin:0 auto 0 auto;
 }
 
-#drawingboardDiv {
+#canvasDiv {
     text-align:center;
 }
 
