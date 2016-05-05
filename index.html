@@ -3,33 +3,35 @@
 <head>
 <meta charset=utf-8 />
 <title>Linguatron</title>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <link rel="stylesheet" href="main.css">
-<script src="linguatron.js"></script>
-<script src="main.js"></script>
+
 <script type="text/javascript" src="html5-canvas-drawing-app.js"></script>
 </head>
 <body>
 <div style="text-align:center"><h1>Linguatron</h1></div>
 <div class='container main-container'>
 <div class='row'>
-<div class='col-sm-6' id='top-menu'>
-<span class='top-menu-item' id='clear-button'>Clear</span>
-<span class='top-menu-item' id='record-button'>Record New</span>
-<span> <input type="text" id="new_word"> </span>
-</div><!-- col -->
-</div><!-- row -->
-<div class='row'>
-<div class='col-sm-12'>
-<div id="canvasDiv"></div>
-    <script type="text/javascript"> $(document).ready(function() {
-    	 prepareCanvas();
-});</script>
-</div><!-- col -->
-</div><!-- row -->
-<div id='selectWord' class='row'>
+<div class='col-sm-6' id='top-menu' style="width:500px;margin:auto;text-align:left">
+Thanks for helping with my linguistics 229 final project!
+ It's a system that lets you store text along with symbols that you create and
+ recall the text by drawing the same symbols. It's designed as a way to communicate
+ that's faster than typing, to be used by people who have trouble speaking.
+ <br><br>
+ In order for the algorithm to work well, I need some training data: a set of symbols
+ that people create and later attempts to draw the same symbols.
+ That's where you can help! The next page will ask you to draw some symbols that
+ come to mind when you think of certain words. Then it will ask you to recreate the
+ same symbols from memory a few times. The whole process will take TODO minutes. 
 
+<br><br>
+Please try to use symbols that make sense to you. Keep them simple and fast.
+ <br><br>
+ 
+ <a href="training.html">Click here to start.</a>
+
+</div><!-- col -->
 </div><!-- row -->
+
 </div><!-- container -->
 </body>
 </html>
