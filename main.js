@@ -5,6 +5,7 @@ var paint = false;
 var storedSymbols = [];
 
 $(document).ready(function() {
+    var L = Strict.Linguatron
     $("#clear-button").on("click",function(){
         $("#selectWord").empty();
         clearCanvas();
