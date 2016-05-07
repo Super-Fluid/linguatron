@@ -128,6 +128,9 @@ function toStrokes(symbol) {
 }
 
 function stringifyTrainingData(trainingData) {
+    if (trainingData.length == 0) {
+        return "[]";
+    }
     var s = "[";
     var len = trainingData.length;
     for (var i = 0; i < len; i++) {
@@ -151,6 +154,9 @@ function stringifyDatum(datum) {
 }
 
 function stringifySymbol(symbol) {
+    if (symbol.length == 0) {
+        return "[]";
+    }
     var s = "[";
     var len = symbol.length;
     for (var i = 0; i < len; i++) {
@@ -163,6 +169,9 @@ function stringifySymbol(symbol) {
 }
 
 function stringifyStroke(stroke) {
+    if (stroke.length == 0) {
+        return "[]";
+    }
     var s = "[";
     var len = stroke.length;
     for (var i = 0; i < len; i++) {
