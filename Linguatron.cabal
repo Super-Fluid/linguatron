@@ -1,0 +1,26 @@
+name:                Linguatron
+version:             0.1
+synopsis:            Project Synopsis Here
+description:         Project Description Here
+license:             BSD3
+license-file:        LICENSE
+author:              
+maintainer:          
+stability:           Experimental
+category:            Web
+build-type:          Simple
+cabal-version:       >=1.2
+
+flag development
+  description: Whether to build the server in development (interpreted) mode
+  default: False
+
+library
+  hs-source-dirs: .
+  exposed-moduled:
+    Linguatron
+  other-modules:
+    LinguatronComputation
+  build-depends:
+    fay-text
+    ,fay-base
