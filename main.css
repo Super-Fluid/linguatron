@@ -24,8 +24,28 @@ span.top-menu-item {
 
 .wordOption {
     border: 2px solid #eeeeee;
+    display:inline;
 }
 
 #selectWord {
-    text-align:center;
+    
+    text-align:left;
+}
+
+#outText {
+}
+
+.tri1 {
+    float: left;
+    width:30vw;
+}
+
+.tri2 {
+    width:30vw;
+    display:inline-block;
+}
+
+.tri3 {
+    width:35vw;
+    float: right;
 }

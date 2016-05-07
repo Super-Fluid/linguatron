@@ -6,29 +6,33 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <link rel="stylesheet" href="main.css">
 <script src="linguatron.js"></script>
-<script src="main.js"></script>
+<script src="demo.js"></script>
 <script type="text/javascript" src="html5-canvas-drawing-app.js"></script>
 </head>
 <body>
 <div style="text-align:center"><h1>Linguatron</h1></div>
-<div class='container main-container'>
+<div class=''>
 <div class='row'>
-<div class='col-sm-6' id='top-menu'>
+<div class='' id='top-menu'>
 <span class='top-menu-item' id='clear-button'>Clear</span>
 <span class='top-menu-item' id='record-button'>Record New</span>
 <span> <input type="text" id="new_word"> </span>
 </div><!-- col -->
 </div><!-- row -->
-<div class='row'>
-<div class='col-sm-12'>
+
+<div >
+<span class="tri1">
+<textarea id='outText' cols='50' rows='40'></textarea>
+</span><!-- col -->
+<span class="tri2">
 <div id="canvasDiv"></div>
     <script type="text/javascript"> $(document).ready(function() {
     	 prepareCanvas();
 });</script>
-</div><!-- col -->
-</div><!-- row -->
-<div id='selectWord' class='row'>
-
+</span><!-- col -->
+<span class="tri3">
+<div id='selectWord'></div>
+</span><!-- col -->
 </div><!-- row -->
 </div><!-- container -->
 </body>
