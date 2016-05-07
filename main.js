@@ -72,7 +72,7 @@ $(document).ready(function() {
             symbolMode = x[2];
             
         } else {
-            $("#directions-text").text("Finished! Now please copy the data below and send it to me at isaac.reilly@yale.edu. Thank you!");
+            $("#directions-text").text("Finished! Now please copy the data in the box and send it to me at isaac.reilly@yale.edu. Thank you!");
             var s = stringifyTrainingData(trainingData);
             $("#canvasDiv").hide();
             $("#dataBox").show();
