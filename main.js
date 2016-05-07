@@ -43,7 +43,7 @@ function sendMail(subject,message) {
 }
 
 $(document).ready(function() {
-
+    $("#dataBox").hide();
     
     $("#clear-button").on("click",function(){
         $("#selectWord").empty();
@@ -72,9 +72,13 @@ $(document).ready(function() {
             symbolMode = x[2];
             
         } else {
-            alert("All the data is collected. Now please send it to me by email...");
+            $("#directions-text").text("Finished! Now please copy the data below and send it to me at isaac.reilly@yale.edu. Thank you!");
             var s = stringifyTrainingData(trainingData);
-            sendMail("Linguatron Data",s);
+            $("#canvasDiv").hide();
+            $("#dataBox").show();
+            $("#dataBox").val(s);
+            $(".top-menu-item").hide();
+            //sendMail("Linguatron Data",s);
         }
     });
     
