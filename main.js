@@ -5,7 +5,7 @@ var paint = false;
 var storedSymbols = [];
 
 var symbolMode = "create";
-var symbolWord = "cow";
+var symbolWord = "ball";
 var instructions = [
      ["Create a symbol for a tree.","tree","create"]
     ,["Create a symbol for water.","water","create"]
