@@ -4,11 +4,33 @@ var storedSymbols = [];
 var paint = false;
 var storedSymbols = [];
 
-var symbolMode = true;
+var symbolMode = "create";
 var symbolWord = "cow";
 var instructions = [
-     ["draw your symbol for a cow","cow",false]
-    ,["draw your symbol for a cow","cow",false]
+     ["Create a symbol for a tree.","tree","create"]
+    ,["Create a symbol for water.","water","create"]
+    ,["Create a symbol for a cat.","cat","create"]
+    ,["Create a symbol for a book.","book","create"]
+    ,["Draw your symbol for a ball.","ball","reproduce"]
+    ,["Draw your symbol for water.","water","reproduce"]
+    ,["Draw your symbol for a tree.","tree","reproduce"]
+    ,["Draw your symbol for a book.","book","reproduce"]
+    ,["Draw your symbol for a cat.","cat","reproduce"]
+    ,["Draw your symbol for a ball.","ball","reproduce"]
+    ,["Draw your symbol for a tree.","tree","reproduce"]
+    ,["Draw your symbol for a book.","book","reproduce"]
+    ,["Draw your symbol for a cat.","cat","reproduce"]
+    ,["Draw your symbol for water.","water","reproduce"]
+    ,["Draw your symbol for a ball.","ball","reproduce"]
+    ,["Draw your symbol for a cat.","cat","reproduce"]
+    ,["Draw your symbol for water.","water","reproduce"]
+    ,["Draw your symbol for a tree.","tree","reproduce"]
+    ,["Draw your symbol for a ball.","ball","reproduce"]
+    ,["Draw your symbol for a book.","book","reproduce"]
+    ,["Draw your symbol for a tree.","tree","reproduce"]
+    ,["Draw your symbol for water.","water","reproduce"]
+    ,["Draw your symbol for a book.","book","reproduce"]
+    ,["Draw your symbol for a cat.","cat","reproduce"]
     ].reverse();
 
 var trainingData = [];
@@ -33,7 +55,7 @@ $(document).ready(function() {
     
     $("#ok-button").on("click",function(){
         var symbol = { xs:clickX.slice(), ys:clickY.slice(), drags:clickDrag.slice(), value:($("#new_word").val()) };
-        var strokeSymbol = toTrainingDatum(symbol,"create");
+        var strokeSymbol = toTrainingDatum(symbol);
         trainingData.push(strokeSymbol);
         
         // now clear the canvas
@@ -50,8 +72,9 @@ $(document).ready(function() {
             symbolMode = x[2];
             
         } else {
-            alert("All the data is collected. Now please send it to me by email...");            
-
+            alert("All the data is collected. Now please send it to me by email...");
+            var s = stringifyTrainingData(trainingData);
+            sendMail("Linguatron Data",s);
         }
     });
     
@@ -78,8 +101,86 @@ $(document).ready(function() {
     
 });
 
-function toTrainingDatum(symbol,mode) {
-    return [];
+function toTrainingDatum(symbol) {
+    var datum = {mode:symbolMode, word:symbolWord}
+    datum.strokes = toStrokes(symbol);
+    return datum;
+}
+
+function toStrokes(symbol) {
+    var strokes = [];
+    var stroke = [];
+    var len = symbol.xs.length;
+    for (var i = 0; i < len; i++) {
+        if (symbol.drags[i]) {
+        // add to current stroke
+            stroke.push({x:symbol.xs[i],y:symbol.ys[i]});
+        } else {
+        // start a new stroke
+            strokes.push(stroke.slice());
+            stroke = [];
+            stroke.push({x:symbol.xs[i],y:symbol.ys[i]});
+        }
+    }
+    strokes.push(stroke.slice());
+    strokes.splice(0,1);
+    return strokes;
+}
+
+function stringifyTrainingData(trainingData) {
+    var s = "[";
+    var len = trainingData.length;
+    for (var i = 0; i < len; i++) {
+        s += stringifyDatum(trainingData[i]);
+        s += ",";
+    }
+    s = s.slice(0,-1) // remove extra comma
+    s += "]"
+    return s;
+}
+
+function stringifyDatum(datum) {
+    var s = "{mode:\"";
+    s += datum.mode;
+    s += "\", word: \"";
+    s += datum.word;
+    s += "\", strokes: ";
+    s += stringifySymbol(datum.strokes);
+    s += "}";
+    return s;
+}
+
+function stringifySymbol(symbol) {
+    var s = "[";
+    var len = symbol.length;
+    for (var i = 0; i < len; i++) {
+        s += stringifyStroke(symbol[i]);
+        s += ",";
+    }
+    s = s.slice(0,-1) // remove extra comma
+    s += "]"
+    return s;
+}
+
+function stringifyStroke(stroke) {
+    var s = "[";
+    var len = stroke.length;
+    for (var i = 0; i < len; i++) {
+        s += stringifyPoint(stroke[i]);
+        s += ",";
+    }
+    s = s.slice(0,-1) // remove extra comma
+    s += "]"
+    return s;
+}
+
+function stringifyPoint(point) {
+    var s = "{x:";
+    s += point.x.toString();
+    s += ",y:";
+    s += point.y.toString();
+    s += "}";
+    return s;
 }
 
 function makeMiniCanvas(id,symbol) {
