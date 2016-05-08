@@ -160,15 +160,7 @@ function makeMiniCanvas(id,fullSymbol) {
 var recentWords = [];
 
 // features: list of [function from two symbols to a real number, weight]
-var features = [
-    [numStrokesF,1.0]
-    ,[startingXF,1.0]
-    ,[startingYF,1.0]
-    ,[endingXF,1.0]
-    ,[endingYF,1.0]
-    ,[numStrokesF,1.0]
-    ,[numStrokesF,1.0]
-    ];
+
 function score(symbol1,symbol2) {
     var sum = 0.0;
     var len = features.length;
@@ -188,7 +180,7 @@ function searchForMatchingSymbols() {
     for (index = 0; index < storedSymbols.length; ++index) {
         scored.push([storedSymbols[index],score(storedSymbols[index],currentSymbol)]);
     }
-    scored.sort(function (a,b) { return (b[1] - a[1]); });
+    scored.sort(function (a,b) { return (a[1] - b[1]); });
     var nBest = scored.slice(0,NMATCHES);
     nBest.reverse();
     for (index = 0; index < nBest.length; ++index) {
@@ -196,38 +188,36 @@ function searchForMatchingSymbols() {
     }
 }
 
+// differenceBy :: (Symbol -> Double) -> Double -> (Symbol -> Symbol -> Double)
+// the 'scale' should be the distance between the max and min
+function differenceBy(f,scale) {
+    return ( function(s1,s2){
+        try {
+            var loose = 1-Math.abs(f(s1) - f(s2))/scale;
+            // negative because difference is bad
+            if (loose > 1) {
+                return 1.0;
+            } else if (loose < 0) {
+                return 0.0;
+            } else {
+                return loose;
+            }
+        } catch(err) {
+            return(-10); // not really sure what the best value is here
+        }
+    });
+}
+
 // FEATURES
-function numStrokesF(s1,s2) {
-    return Math.abs(s1.strokes.length - s2.strokes.length);
-}
+var numStrokesF = differenceBy(function(s){return(s.strokes.length);},10);
 
-function startingXF(s1,s2) {
-    if (s1.strokes.length == 0 || s1.strokes.length) {
-        return 0;
-    }
-    return Math.abs(s1.strokes[0].x - s2.strokes[0].x);
-}
+var startingXF = differenceBy(function(s){return s.strokes[0][0].x;},400);
+var startingYF = differenceBy(function(s){return s.strokes[0][0].y;},400);
+var endingXF = differenceBy(function(s){return s.strokes[-1][-1].x;},400);
+var endingYF = differenceBy(function(s){return s.strokes[-1][-1].x;},400);
+var firstStrokeEndingXF = differenceBy(function(s){return s.strokes[0][-1].x;},400);
+var firstStrokeEndingYF = differenceBy(function(s){return s.strokes[0][-1].x;},400);
 
-function startingYF(s1,s2) {
-    if (s1.strokes.length == 0 || s1.strokes.length) {
-        return 0;
-    }
-    return Math.abs(s1.strokes[0][0].y - s2.strokes[0][0].y);
-}
-
-function endingXF(s1,s2) {
-    if (s1.strokes.length == 0 || s1.strokes.length) {
-        return 0;
-    }
-    return Math.abs(s1.strokes[-1][-1].x - s2.strokes[-1][-1].x);
-}
-
-function endingYF(s1,s2) {
-    if (s1.strokes.length == 0 || s1.strokes.length) {
-        return 0;
-    }
-    return Math.abs(s1.strokes[-1][-1].y - s2.strokes[-1][-1].y);
-}
 
 // old stuff, keeping for reference. delete eventually.
 function calculateSignature(fullSymbol) {
@@ -286,3 +276,13 @@ function compareSignatures(symbol1,symbol2) {
     }
     return (1.0 - (error/10));
 }
+
+var features = [
+    [numStrokesF,1.0]
+    ,[startingXF,1.0]
+    ,[startingYF,1.0]
+    ,[endingXF,1.0]
+    ,[endingYF,1.0]
+    ,[numStrokesF,1.0]
+    ,[numStrokesF,1.0]
+    ];
