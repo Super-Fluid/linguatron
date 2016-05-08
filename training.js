@@ -113,6 +113,8 @@ function toStrokes(symbol) {
 // in order to email the data to me, it has to convert
 // it into a string. It does this in such that I can paste
 // the string into JS code to get the value.
+// .. I should have just used JSON.stringify but I didn't
+// realize this until later
 function stringifyTrainingData(trainingData) {
     if (trainingData.length == 0) {
         return "[]";
@@ -176,4 +178,8 @@ function stringifyPoint(point) {
     s += point.y.toString();
     s += "}";
     return s;
+}
+
+function searchForMatchingSymbols() {
+// not needed for gathering training data
 }
