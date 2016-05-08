@@ -15,11 +15,7 @@ var paint = false; // used by the canvas drawing code
 var NMATCHES = 6; // number of matches to display
 
 $(document).ready(function() {
-    $("#search-button").on("click",function(){
-        $("#selectWord").empty();
-        searchForMatchingSymbols();
-    });
-        
+    setInterval(searchForMatchingSymbols,100);
     
     $("#clear-button").on("click",function(){
         $("#selectWord").empty(); // an empty canvas shouldn't match anything
@@ -152,29 +148,29 @@ var recentWords = [];
 // features: list of [function from two symbols to a real number, weight]
 var features = [[compareSignatures,1.0]];
 function score(symbol1,symbol2) {
-    var sum = 0;
-    for (index = 0; index < features.length; ++index) {
+    var sum = 0.0;
+    var len = features.length;
+    for (var index = 0; index < len; ++index) {
         sum += features[index][0](symbol1,symbol2) * features[index][1];
         // feature's score * feature's weight
     }
     return sum;
+    
 }
 
 // call this function to display the best matches
 function searchForMatchingSymbols() {
-console.log("go");
     $("#selectWord").empty(); // remove old matches
     var scored = [];
     var currentSymbol = preprocessSymbol({ xs:clickX, ys:clickY, drags:clickDrag});
     for (index = 0; index < storedSymbols.length; ++index) {
         scored.push([storedSymbols[index],score(storedSymbols[index],currentSymbol)]);
     }
-    scored.sort(function (a,b) { b[1] - a[1] });
-    var nBest = scored.slice(0,NMATCHES+1);
+    scored.sort(function (a,b) { return (b[1] - a[1]); });
+    var nBest = scored.slice(0,NMATCHES);
     for (index = 0; index < nBest.length; ++index) {
         makeMiniCanvas("option"+index,nBest[index][0]);
     }
-console.log("stop");
 }
 
 function calculateSignature(fullSymbol) {
