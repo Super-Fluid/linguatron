@@ -203,7 +203,7 @@ function differenceBy(f,scale) {
                 return loose;
             }
         } catch(err) {
-            return(-10); // not really sure what the best value is here
+            return 0;
         }
     });
 }
