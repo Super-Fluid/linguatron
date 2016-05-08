@@ -179,7 +179,3 @@ function stringifyPoint(point) {
     s += "}";
     return s;
 }
-
-function searchForMatchingSymbols() {
-// not needed for gathering training data
-}
