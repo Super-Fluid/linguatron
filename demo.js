@@ -5,7 +5,7 @@ at the Hack the Brain 2016 hackathon
 with substantial further work for my
 Linguistics 229 final project.
 
-Canvas drawing code thanks to
+Canvas drawing code is from
 http://www.williammalone.com/articles/create-html5-canvas-javascript-drawing-app/
 */
 
@@ -60,15 +60,29 @@ function toStrokes(symbol) {
     var strokes = [];
     var stroke = [];
     var len = symbol.xs.length;
+    var prev_x = undefined;
+    var prev_x = undefined;
     for (var i = 0; i < len; i++) {
         if (symbol.drags[i]) {
-        // add to current stroke
-            stroke.push({x:symbol.xs[i],y:symbol.ys[i]});
+            // add to current stroke
+            // but only if different enough from the previous point in this stroke
+            var x_distinct = Math.abs(prev_x - symbol.xs[i]) > 2;
+            var y_distinct = Math.abs(prev_y - symbol.ys[i]) > 2;
+            // prev_x, prev_y will never be undefined because this
+            // is not the first point in a stroke
+            if (x_distinct || y_distinct) {
+                stroke.push({x:symbol.xs[i],y:symbol.ys[i]});
+                prev_x = symbol.xs[i];
+                prev_y = symbol.ys[i];
+            }
         } else {
-        // start a new stroke
+            // start a new stroke
+            // always add this point
             strokes.push(stroke.slice());
             stroke = [];
             stroke.push({x:symbol.xs[i],y:symbol.ys[i]});
+            prev_x = symbol.xs[i];
+            prev_y = symbol.ys[i];
         }
     }
     strokes.push(stroke.slice());
@@ -78,7 +92,7 @@ function toStrokes(symbol) {
 
 // create a small canvas showing a symbol and a word
 // you can click on it to select that word
-// modified from code in the main canvas
+// modified from code in the main canvas (which I didn't write)
 function makeMiniCanvas(id,fullSymbol) {
     var symbol = fullSymbol.pointsAndDrags;
     var word = fullSymbol.word;
