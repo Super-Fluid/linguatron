@@ -146,7 +146,15 @@ function makeMiniCanvas(id,fullSymbol) {
 var recentWords = [];
 
 // features: list of [function from two symbols to a real number, weight]
-var features = [[compareSignatures,1.0]];
+var features = [
+    [numStrokesF,1.0]
+    ,[startingXF,1.0]
+    ,[startingYF,1.0]
+    ,[endingXF,1.0]
+    ,[endingYF,1.0]
+    ,[numStrokesF,1.0]
+    ,[numStrokesF,1.0]
+    ];
 function score(symbol1,symbol2) {
     var sum = 0.0;
     var len = features.length;
@@ -168,11 +176,46 @@ function searchForMatchingSymbols() {
     }
     scored.sort(function (a,b) { return (b[1] - a[1]); });
     var nBest = scored.slice(0,NMATCHES);
+    nBest.reverse();
     for (index = 0; index < nBest.length; ++index) {
         makeMiniCanvas("option"+index,nBest[index][0]);
     }
 }
 
+// FEATURES
+function numStrokesF(s1,s2) {
+    return Math.abs(s1.strokes.length - s2.strokes.length);
+}
+
+function startingXF(s1,s2) {
+    if (s1.strokes.length == 0 || s1.strokes.length) {
+        return 0;
+    }
+    return Math.abs(s1.strokes[0].x - s2.strokes[0].x);
+}
+
+function startingYF(s1,s2) {
+    if (s1.strokes.length == 0 || s1.strokes.length) {
+        return 0;
+    }
+    return Math.abs(s1.strokes[0][0].y - s2.strokes[0][0].y);
+}
+
+function endingXF(s1,s2) {
+    if (s1.strokes.length == 0 || s1.strokes.length) {
+        return 0;
+    }
+    return Math.abs(s1.strokes[-1][-1].x - s2.strokes[-1][-1].x);
+}
+
+function endingYF(s1,s2) {
+    if (s1.strokes.length == 0 || s1.strokes.length) {
+        return 0;
+    }
+    return Math.abs(s1.strokes[-1][-1].y - s2.strokes[-1][-1].y);
+}
+
+// old stuff, keeping for reference. delete eventually.
 function calculateSignature(fullSymbol) {
     var symbol = fullSymbol.pointsAndDrags;
     var xs = symbol.xs.slice(0,1);
