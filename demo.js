@@ -173,11 +173,14 @@ function searchForMatchingSymbols() {
     var scored = [];
     var currentSymbol = preprocessSymbol({ xs:clickX, ys:clickY, drags:clickDrag});
     for (index = 0; index < storedSymbols.length; ++index) {
-        scored.push([storedSymbols[index],score(storedSymbols[index],currentSymbol)]);
+        scored.push([storedSymbols[index],
+                     Math.exp(score(storedSymbols[index],currentSymbol))
+                     ]);
     }
-    scored.sort(function (a,b) { return (a[1] - b[1]); });
+    // the Math.exp makes this a log-linear maxent model
+    // now sort the best (highest scoring) stored symbols to the front of the list
+    scored.sort(function (a,b) { return (b[1] - a[1]); });
     var nBest = scored.slice(0,NMATCHES);
-    nBest.reverse();
     for (index = 0; index < nBest.length; ++index) {
         makeMiniCanvas("option"+index,nBest[index][0]);
     }
