@@ -104,7 +104,7 @@ function makeMiniCanvas(id,fullSymbol) {
 	$("#"+id).addClass("wordOption").on("click",function(){
 	    var currentOut = $("#outText").val();
 	    currentOut += " " + word;
-	    trainUnigram(word);
+	    trainLanguageModel(word);
 	    $("#outText").val(currentOut);
 	    clearCanvas();
 	    clickX.length = 0;
@@ -232,43 +232,69 @@ function arrayDifferenceBy(f,scale) {
 
 // LANGUAGE MODEL
 
-// unigrams has type [{word,count}]
-var unigrams = []
+// trigrams has type [{words[3],count}]
+var trigrams = [];
+var prev_word = "";
+var prev_prev_word = "";
 
-function unigramScore(w) {
+function trigramScore(w) {
     var totalCount = 0.01;
     var thisCount = 0;
-    for (var i = 0; i < unigrams.length; i++) {
-        totalCount += unigrams[i].count;
-        if (unigrams[i].word == w) {
-            thisCount = unigrams[i].count;
+    for (var i = 0; i < trigrams.length; i++) {
+        if (trigrams[i].words[1] == prev_word && 
+            trigrams[i].words[2] == prev_prev_word) {
+            
+            totalCount += trigrams[i].count;
+            if (trigrams[i].words[0] == w) {
+                thisCount = trigrams[i].count;
+            }
         }
     }
     return (thisCount/totalCount);
 }
 
-function trainUnigram(w) {
+function trainTrigram(w) {
     var foundP = false;
-    for (var i = 0; i < unigrams.length; i++) {
-        if (unigrams[i].word == w) {
-            unigrams[i].count++;
+    for (var i = 0; i < trigrams.length; i++) {
+        if (trigrams[i].words[0] == w && 
+            trigrams[i].words[1] == prev_word &&
+            trigrams[i].words[2] == prev_prev_word) {
+            
+            trigrams[i].count++;
             foundP = true;
         }
     }
     if (!foundP) {
-        unigrams.push({word:w,count:1});
+        trigrams.push({words:[w,prev_word,prev_prev_word],count:1});
     }
+    // get ready for the next word
+    prev_prev_word = prev_word;
+    prev_word = w;
 }
 
-function resetUnigram() {
+function resetTrigram() {
     unigrams = [];
+    prev_word = "";
+    prev_prev_word = "";
 }
+
+// use these functions elsewhere, not the trigram-specific
+// functions defined above, so that the language model can
+// be changed just by changing these three functions.
 
 function languageModelAsFeature(s1,s2) {
     // score is called as
     // score(storedSymbols[index],currentSymbol)
     // We want to evaluate the stored symbol's word
-    return(unigramScore(s1.word));
+    return(trigramScore(s1.word));
+}
+
+function trainLanguageModel(w) {
+    trainTrigram(w);
+}
+
+function resetLanguageModel() {
+    resetTrigram();
 }
 
 // FEATURES
