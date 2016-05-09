@@ -300,7 +300,7 @@ var logRatioOfShortestAndLongestStrokesF = differenceBy(function(s){
             shortestLength = s.strokes[i].length;
         }
     }
-    return (Math.log2(longestLength/(shortestLength+0.01))+4);
+    return (Math.log2(longestLength/(shortestLength+0.01)));
 },8);
 
 // "stretch" is the distance between the start and end point
@@ -331,7 +331,7 @@ var logRatioOfMostAndLeastStretchF = differenceBy(function(s){
             shortestStretch = stretch(s.strokes[i]);
         }
     }
-    return (Math.log2(longestStretch/shortestStretch) + 8);
+    return (Math.log2(longestStretch/shortestStretch));
 },16);
 
 var compareAllLengthsOfStrokesF = arrayDifferenceBy(function(s){
@@ -533,7 +533,7 @@ var curlOflongestStrokeF = differenceBy(function(s){
             longestStroke = s.strokes[i];
         }
     }
-    return getCurl(longestStroke) + Math.PI;
+    return getCurl(longestStroke);
 },6);
 
 var compareAllCurlF = arrayDifferenceBy(function(s){
@@ -541,7 +541,7 @@ var compareAllCurlF = arrayDifferenceBy(function(s){
     for (var i = 0; i < s.strokes.length; i++) {
         curls.push(getCurl(s.strokes[i]));
     }
-    return curls + Math.PI;
+    return curls;
 },6);
 
 var absoluteCurlOflongestStrokeF = differenceBy(function(s){
@@ -649,7 +649,7 @@ var logAspectRatioF = differenceBy(function(s){
             }
         }
     }
-    return (Math.log2(highestY - lowestY/highestX - lowestX + 0.01) + 8);
+    return (Math.log2(highestY - lowestY/highestX - lowestX + 0.01));
 },16);
 
 // features: list of [function from two symbols to a real number, weight]
