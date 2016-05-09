@@ -6,3 +6,21 @@ To view the project, just open "demo.html" in your browser.
 An internet connection is required so it can download jQuery.
 
 I gathered my training data with "training.html", which works the same way.
+It asks the user to send me an email with the collected data.
+
+When you first open demo.html, it's not trained and works poorly. 
+In the JavaScript console, try:
+
+test();
+-> 
+train();
+test();
+-> 
+
+"devtest()" runs the development test.
+"longtest()" runs a test I created with a larger vocabulary.
+"reset()" throws away the training.
+
+Separate from the training, which sets the weights of the features
+and language model, you can load some symbols with "load_vocab()" and
+erase all the stored symbols with "clear_vocab()".
