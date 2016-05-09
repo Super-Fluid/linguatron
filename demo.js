@@ -218,64 +218,58 @@ var endingYF = differenceBy(function(s){return s.strokes[-1][-1].x;},400);
 var firstStrokeEndingXF = differenceBy(function(s){return s.strokes[0][-1].x;},400);
 var firstStrokeEndingYF = differenceBy(function(s){return s.strokes[0][-1].x;},400);
 
+var avgLengthOfStrokesF = differenceBy(function(s){
+    var sum = 0;
+    for (var i = 0; i < s.strokes.length; i++) {
+        sum += s.strokes[i].length;
+    }
+    return (sum/s.strokes.length);
+},40);
 
-// old stuff, keeping for reference. delete eventually.
-function calculateSignature(fullSymbol) {
-    var symbol = fullSymbol.pointsAndDrags;
-    var xs = symbol.xs.slice(0,1);
-    var ys = symbol.ys.slice(0,1);
-    var prev_x = xs[0];
-    var prev_y = ys[0];
-    
-    // remove points which are near to previous points
-    // starting with the second point
-    for (i = 1; i < symbol.xs.length; ++i) {
-        var x_distinct = Math.abs(prev_x - symbol.xs[i]) > 1;
-        var y_distinct = Math.abs(prev_y - symbol.ys[i]) > 1;
-        if (x_distinct && y_distinct) {
-            xs.push(symbol.xs[i]);
-            ys.push(symbol.ys[i]);
-            prev_x = symbol.xs[i];
-            prev_y = symbol.ys[i];
+var logRatioOfShortestAndLongestStrokesF = differenceBy(function(s){
+    var shortestLength = s.strokes[0].length;
+    var longestLength = s.strokes[0].length;
+    for (var i = 0; i < s.strokes.length; i++) {
+        if (s.strokes[i].length > longestLength) {
+            longestLength = s.strokes[i].length;
+        }
+        if (s.strokes[i].length < shortestLength) {
+            shortestLength = s.strokes[i].length;
         }
     }
-    
-    
-    // make histogram
-    var hist = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
-    for (i = 0; i < xs.length; ++i) {
-        var x = Math.floor(xs[i]/100);
-        if (x > 3) {
-            x = 3;
-        } else if (x < 0) {
-            x = 0;
-        }
-        var y = Math.floor(ys[i]/100);
-        if (y > 3) {
-            y = 3;
-        } else if (y < 0) {
-            y = 0;
-        }
-        
-        hist[x][y]++;
-    }
-    return hist;
+    return (Math.log2(longestLength/shortestLength));
+},8);
+
+// "stretch" is the distance between the start and end point
+function stretch(stroke) {
+    h_stretch = Math.abs(stroke[0].x - stroke[-1].x);
+    v_stretch = Math.abs(stroke[0].y - stroke[-1].y);
+    return (Math.sqrt(h_stretch*h_stretch + v_stretch*v_stretch));
 }
 
-function compareSignatures(symbol1,symbol2) {
-    var hist1 = calculateSignature(symbol1);
-    var hist2 = calculateSignature(symbol2);
-    var error = 0;
-    for (i = 0; i < 4; ++i) {
-        for (j = 0; j < 4; ++j) {
-            var diff = Math.abs(hist1[i][j] - hist2[i][j]);
-            if (diff > 1) {
-                error+=diff;
-            }
+var avgStretchOfStrokesF = differenceBy(function(s){
+// "stretch" is the distance between the start and end point
+    var sum = 0;
+    for (var i = 0; i < s.strokes.length; i++) {
+        sum += stretch(s.strokes[i]);
+    }
+    return (sum/s.strokes.length);
+},8);
+
+var logRatioOfMostAndLeastStretchF = differenceBy(function(s){
+// "stretch" is the distance between the start and end point
+    var shortestStretch = stretch(s.strokes[0]);
+    var longestStretch = stretch(s.strokes[0]);
+    for (var i = 0; i < s.strokes.length; i++) {
+        if (stretch(s.strokes[i]) > longestStretch) {
+            longestStretch = stretch(s.strokes[i]);
+        }
+        if (stretch(s.strokes[i]) < shortestStretch) {
+            shortestStretch = stretch(s.strokes[i]);
         }
     }
-    return (1.0 - (error/10));
-}
+    return (Math.log2(longestStretch/shortestStretch));
+},16);
 
 var features = [
     [numStrokesF,1.0]
@@ -283,6 +277,6 @@ var features = [
     ,[startingYF,1.0]
     ,[endingXF,1.0]
     ,[endingYF,1.0]
-    ,[numStrokesF,1.0]
-    ,[numStrokesF,1.0]
+    ,[avgLengthOfStrokesF,1.0]
+    ,[logRatioOfShortestAndLongestStrokesF,1.0]
     ];
