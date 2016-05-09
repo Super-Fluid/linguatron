@@ -15,7 +15,6 @@ var paint = false; // used by the canvas drawing code
 var NMATCHES = 6; // number of matches to display
 
 $(document).ready(function() {
-    setInterval(searchForMatchingSymbols,100);
     
     $("#clear-button").on("click",function(){
         $("#selectWord").empty(); // an empty canvas shouldn't match anything
@@ -105,6 +104,7 @@ function makeMiniCanvas(id,fullSymbol) {
 	$("#"+id).addClass("wordOption").on("click",function(){
 	    var currentOut = $("#outText").val();
 	    currentOut += " " + word;
+	    trainUnigram(word);
 	    $("#outText").val(currentOut);
 	    clearCanvas();
 	    clickX.length = 0;
@@ -155,11 +155,6 @@ function makeMiniCanvas(id,fullSymbol) {
 	con.font="20px Georgia";
     con.fillText(word,10,20);
 }
-
-// language model stuff
-var recentWords = [];
-
-// features: list of [function from two symbols to a real number, weight]
 
 function score(symbol1,symbol2) {
     var sum = 0.0;
@@ -234,6 +229,47 @@ function arrayDifferenceBy(f,scale) {
 
 // In following functions, adding 0.01 prevents a div by 0 error.
 // Errors are caught, but NaNs are infectious.
+
+// LANGUAGE MODEL
+
+// unigrams has type [{word,count}]
+var unigrams = []
+
+function unigramScore(w) {
+    var totalCount = 0.01;
+    var thisCount = 0;
+    for (var i = 0; i < unigrams.length; i++) {
+        totalCount += unigrams[i].count;
+        if (unigrams[i].word == w) {
+            thisCount = unigrams[i].count;
+        }
+    }
+    return (thisCount/totalCount);
+}
+
+function trainUnigram(w) {
+    var foundP = false;
+    for (var i = 0; i < unigrams.length; i++) {
+        if (unigrams[i].word == w) {
+            unigrams[i].count++;
+            foundP = true;
+        }
+    }
+    if (!foundP) {
+        unigrams.push({word:w,count:1});
+    }
+}
+
+function resetUnigram() {
+    unigrams = [];
+}
+
+function languageModelAsFeature(s1,s2) {
+    // score is called as
+    // score(storedSymbols[index],currentSymbol)
+    // We want to evaluate the stored symbol's word
+    return(unigramScore(s1.word));
+}
 
 // FEATURES
 var numStrokesF = differenceBy(function(s){return(s.strokes.length);},10);
@@ -616,6 +652,7 @@ var logAspectRatioF = differenceBy(function(s){
     return (Math.log2(highestY - lowestY/highestX - lowestX + 0.01) + 8);
 },16);
 
+// features: list of [function from two symbols to a real number, weight]
 var features = [
     [numStrokesF,1.0]
     ,[startingXF,1.0]
@@ -642,4 +679,5 @@ var features = [
     ,[normalizedAvgXF,1.0]
     ,[normalizedAvgYF,1.0]
     ,[logAspectRatioF,1.0]
+    ,[languageModelAsFeature,1.0]
     ];

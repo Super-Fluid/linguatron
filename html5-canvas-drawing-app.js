@@ -281,7 +281,7 @@ function redraw()
 	
 	// Draw the outline image
 	//context.drawImage(outlineImage, drawingAreaX, drawingAreaY, drawingAreaWidth, drawingAreaHeight);
-
+searchForMatchingSymbols();
 }
 
 
