@@ -13,10 +13,13 @@ var storedSymbols = [];
 var paint = false; // used by the canvas drawing code
 
 var NMATCHES = 6; // number of matches to display
+var LEARNING_RATE = 0.01 // the perceptron learning rate, alpha
 
 $(document).ready(function() {
     
     $("#clear-button").on("click",function(){
+        var querySymbol = preprocessSymbol({ xs:clickX, ys:clickY, drags:clickDrag});
+        perceptron(undefined,querySymbol); // penalize all the displayed options
         $("#selectWord").empty(); // an empty canvas shouldn't match anything
         clearCanvas();
         clickX.length = 0;
@@ -92,7 +95,7 @@ function toStrokes(symbol) {
 // create a small canvas showing a symbol and a word
 // you can click on it to select that word
 // modified from code in the main canvas (which I didn't write)
-function makeMiniCanvas(id,fullSymbol) {
+function makeMiniCanvas(id,fullSymbol,querySymbol) {
     var symbol = fullSymbol.pointsAndDrags;
     var word = fullSymbol.word;
 	var canvasDiv = document.getElementById('selectWord');
@@ -102,6 +105,7 @@ function makeMiniCanvas(id,fullSymbol) {
 	c.setAttribute('id', id);
 	canvasDiv.appendChild(c);
 	$("#"+id).addClass("wordOption").on("click",function(){
+	    perceptron(fullSymbol,querySymbol);
 	    var currentOut = $("#outText").val();
 	    currentOut += " " + word;
 	    trainLanguageModel(word);
@@ -181,8 +185,46 @@ function searchForMatchingSymbols() {
     // now sort the best (highest scoring) stored symbols to the front of the list
     scored.sort(function (a,b) { return (b[1] - a[1]); });
     var nBest = scored.slice(0,NMATCHES);
+    displayedOptionSymbols = nBest; // the perceptron uses this global var
     for (index = 0; index < nBest.length; ++index) {
-        makeMiniCanvas("option"+index,nBest[index][0]);
+        makeMiniCanvas("option"+index,nBest[index][0],currentSymbol);
+    }
+}
+
+var displayedOptionSymbols = [];
+
+// adjust the weights of the features to perform one
+// step of the perceptron algorithm.
+function perceptron(chosenSymbol,querySymbol) {
+// if chosenSymbol is undefined, then all the 
+// displayedOptionSymbols get negative feedback
+
+    if (chosenSymbol === undefined) {
+        for (var index = 0; index < displayedOptionSymbols.length; ++index) {
+            adjustFeatures(displayedOptionSymbols[index],
+                           querySymbol,
+                           0); // negative feedback all around
+        }
+    } else {
+        for (var index = 0; index < displayedOptionSymbols.length; ++index) {
+            if (displayedOptionSymbols[index].word == chosenSymbol.word) {
+                adjustFeatures(displayedOptionSymbols[index],
+                               querySymbol,
+                               1);
+            } else {
+                adjustFeatures(displayedOptionSymbols[index],
+                               querySymbol,
+                               0);
+            }
+        } // end for each displayed symbol
+    } // end if chosenSymbol === undefined
+}
+
+function adjustFeatures(storedSymbol,querySymbol,desiredScore) {
+    var len = features.length;
+    for (var index = 0; index < len; ++index) {
+        var actualScore = features[index][0](storedSymbol,querySymbol) * features[index][1];
+        features[index][1] += LEARNING_RATE * (desiredScore - actualScore);
     }
 }
 
