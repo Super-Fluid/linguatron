@@ -208,6 +208,30 @@ function differenceBy(f,scale) {
     });
 }
 
+// same, but expects each function to give an array of numbers
+function arrayDifferenceBy(f,scale) {
+    return ( function(ns1,ns2){
+        try {
+            var avgError = 0;
+            var len = Math.min(ns1.length,ns2.length);
+            for (var i = 0; i < len; i++) {
+                avgError += Math.abs(ns1[i] - ns2[i]);
+            }
+            var loose = 1-(avgError/len/scale);
+            // negative because difference is bad
+            if (loose > 1) {
+                return 1.0;
+            } else if (loose < 0) {
+                return 0.0;
+            } else {
+                return loose;
+            }
+        } catch(err) {
+            return 0;
+        }
+    });
+}
+
 // FEATURES
 var numStrokesF = differenceBy(function(s){return(s.strokes.length);},10);
 
@@ -271,6 +295,236 @@ var logRatioOfMostAndLeastStretchF = differenceBy(function(s){
     return (Math.log2(longestStretch/shortestStretch));
 },16);
 
+var compareAllLengthsOfStrokesF = arrayDifferenceBy(function(s){
+    var lengths = [];
+    for (var i = 0; i < s.strokes.length; i++) {
+        lengths.push(s.strokes[i].length);
+    }
+    return lengths;
+},400);
+
+var compareAllStretchesOfStrokesF = arrayDifferenceBy(function(s){
+    var lengths = [];
+    for (var i = 0; i < s.strokes.length; i++) {
+        lengths.push(stretch(s.strokes[i]));
+    }
+    return lengths;
+},400);
+
+var longestStrokeF = differenceBy(function(s){
+    var longestLength = s.strokes[0].length;
+    for (var i = 0; i < s.strokes.length; i++) {
+        if (s.strokes[i].length > longestLength) {
+            longestLength = s.strokes[i].length;
+        }
+    }
+    return longestLength;
+},400);
+
+var mostStretchStrokeF = differenceBy(function(s){
+    var longestStretch = stretch(s.strokes[0]);
+    for (var i = 0; i < s.strokes.length; i++) {
+        if (stretch(s.strokes[i]) > longestStretch) {
+            longestStretch = stretch(s.strokes[i]);
+        }
+    }
+    return longestStretch;
+},400);
+
+var compareAllStartXF = arrayDifferenceBy(function(s){
+    var ps = [];
+    for (var i = 0; i < s.strokes.length; i++) {
+        ps.push(s.strokes[i][0].x);
+    }
+    return ps;
+},400);
+
+var compareAllStartYF = arrayDifferenceBy(function(s){
+    var ps = [];
+    for (var i = 0; i < s.strokes.length; i++) {
+        ps.push(s.strokes[i][0].y);
+    }
+    return ps;
+},400);
+
+var compareAllEndXF = arrayDifferenceBy(function(s){
+    var ps = [];
+    for (var i = 0; i < s.strokes.length; i++) {
+        ps.push(s.strokes[i][-1].x);
+    }
+    return ps;
+},400);
+
+var compareAllEndYF = arrayDifferenceBy(function(s){
+    var ps = [];
+    for (var i = 0; i < s.strokes.length; i++) {
+        ps.push(s.strokes[i][-1].y);
+    }
+    return ps;
+},400);
+
+function getCurl(stroke) {
+    if (stroke.length < 3) {
+        return 0;
+    }
+    var curl = 0;
+    var dx = stroke[1].x - stroke[0].x;
+    if (dx == 0) {
+        dx = 0.0001;
+    }
+    var dy = stroke[1].y - stroke[0].y;
+    if (dy == 0) {
+        dy = 0.0001;
+    }
+    // we can simplify the following a bit knowing that
+    // we're going to take it mod pi
+    if (dy/dx > 1) {
+        var prev_angle = -(Math.PI/2) - Math.asin(dx/dy);
+    } else if (dy/dx < -1) {
+        var prev_angle = (Math.PI/2) - Math.asin(dx/dy);
+    } else {
+        var prev_angle = Math.asin(dy/dx);
+    }
+    for (var i = 2; i < stroke.length; i++) {
+        dx = stroke[i].x - stroke[i-1].x;
+        if (dx == 0) {
+            dx = 0.0001;
+        }
+        dy = stroke[i].y - stroke[i-1].y;
+        if (dy == 0) {
+            dy = 0.0001;
+        }
+        if (dy/dx > 1) {
+            var this_angle = -(Math.PI/2) - Math.asin(dx/dy);
+        } else if (dy/dx < -1) {
+            var this_angle = (Math.PI/2) - Math.asin(dx/dy);
+        } else {
+            var this_angle = Math.asin(dy/dx);
+        }
+        curl += this_angle - prev_angle;
+        prev_angle = this_angle;
+    }
+    // PI, not 2*PI, so that sharp points count as 0
+    curl = curl % Math.PI;
+    if (curl < 0) {
+        curl += Math.PI
+    }
+    if (isNaN(curl)) {
+        curl = 0;
+    } // shouldn't happen
+    return curl;
+}
+
+// just like curl, but we add up the abs of the curve at
+// each point, so curvy lines are similar even if they curl
+// in opposite directions.
+// We do not need to take the modulus of this!
+function getAbsoluteCurl(stroke) {
+    if (stroke.length < 3) {
+        return 0;
+    }
+    var curl = 0;
+    var dx = stroke[1].x - stroke[0].x;
+    if (dx == 0) {
+        dx = 0.0001;
+    }
+    var dy = stroke[1].y - stroke[0].y;
+    if (dy == 0) {
+        dy = 0.0001;
+    }
+    // here we could take every bad quadrant as a separate case,
+    // but here's a better idea: let's calculate the arcsin
+    // as in getCurl, but if we notice that the dx or dy has changed,
+    // we add an extra pi/2 of absolute curl for each.
+    if (dy/dx > 1) {
+        var prev_angle = -(Math.PI/2) - Math.asin(dx/dy);
+    } else if (dy/dx < -1) {
+        var prev_angle = (Math.PI/2) - Math.asin(dx/dy);
+    } else {
+        var prev_angle = Math.asin(dy/dx);
+    }
+    var prev_dy = dy;
+    var prev_dx = dx;
+    var prev_angle = Math.asin(dy/dx);
+    
+    for (var i = 2; i < stroke.length; i++) {
+        dx = stroke[i].x - stroke[i-1].x;
+        if (dx == 0) {
+            dx = 0.0001;
+        }
+        dy = stroke[i].y - stroke[i-1].y;
+        if (dy == 0) {
+            dy = 0.0001;
+        }
+        if (dy/dx > 1) {
+            var this_angle = -(Math.PI/2) - Math.asin(dx/dy);
+        } else if (dy/dx < -1) {
+            var this_angle = (Math.PI/2) - Math.asin(dx/dy);
+        } else {
+            var this_angle = Math.asin(dy/dx);
+        }
+        curl += Math.abs(this_angle - prev_angle); // <- ABS
+        
+        // now extra absolute curl for points
+        if (Math.abs(dx - prev_dx) > 10) {
+            curl += Math.PI / 2;
+        }
+        if (Math.abs(dy - prev_dy) > 10) {
+            curl += Math.PI / 2;
+        }
+        
+        prev_angle = this_angle;
+        prev_dx = dx;
+        prev_dy = dy;
+    }
+    // no modulus here
+    
+    if (isNaN(curl)) {
+        curl = 0;
+    } // shouldn't happen, but sometimes does
+    return curl;
+}
+
+var curlOflongestStrokeF = differenceBy(function(s){
+    var longestLength = s.strokes[0].length;
+    var longestStroke = s.strokes[0];
+    for (var i = 0; i < s.strokes.length; i++) {
+        if (s.strokes[i].length > longestLength) {
+            longestLength = s.strokes[i].length;
+            longestStroke = s.strokes[i];
+        }
+    }
+    return getCurl(longestStroke);
+},6);
+
+var compareAllCurlF = arrayDifferenceBy(function(s){
+    var curls = [];
+    for (var i = 0; i < s.strokes.length; i++) {
+        curls.push(getCurl(s.strokes[i]));
+    }
+    return curls;
+},6);
+
+var absoluteCurlOflongestStrokeF = differenceBy(function(s){
+    var longestLength = s.strokes[0].length;
+    var longestStroke = s.strokes[0];
+    for (var i = 0; i < s.strokes.length; i++) {
+        if (s.strokes[i].length > longestLength) {
+            longestLength = s.strokes[i].length;
+            longestStroke = s.strokes[i];
+        }
+    }
+    return getAbsoluteCurl(longestStroke);
+},400);
+
+var compareAllAbsoluteCurlF = arrayDifferenceBy(function(s){
+    var curls = [];
+    for (var i = 0; i < s.strokes.length; i++) {
+        curls.push(getAbsoluteCurl(s.strokes[i]));
+    }
+    return curls;
+},400);
+
 var features = [
     [numStrokesF,1.0]
     ,[startingXF,1.0]
@@ -279,4 +533,20 @@ var features = [
     ,[endingYF,1.0]
     ,[avgLengthOfStrokesF,1.0]
     ,[logRatioOfShortestAndLongestStrokesF,1.0]
+    ,[compareAllLengthsOfStrokesF,1.0]
+    ,[compareAllStretchesOfStrokesF,1.0]
+    ,[logRatioOfShortestAndLongestStrokesF,1.0]
+    ,[longestStrokeF,1.0]
+    ,[mostStretchStrokeF,1.0]
+    ,[compareAllStartXF,1.0]
+    ,[compareAllStartYF,1.0]
+    ,[compareAllEndXF,1.0]
+    ,[compareAllEndYF,1.0]
+    ,[curlOflongestStrokeF,1.0]
+    ,[compareAllCurlF,1.0]
+    ,[absoluteCurlOflongestStrokeF,1.0]
+    ,[compareAllAbsoluteCurlF,1.0]
+    ,[compareAllEndYF,1.0]
+    ,[compareAllEndYF,1.0]
+    ,[compareAllEndYF,1.0]
     ];
