@@ -232,6 +232,9 @@ function arrayDifferenceBy(f,scale) {
     });
 }
 
+// In following functions, adding 0.01 prevents a div by 0 error.
+// Errors are caught, but NaNs are infectious.
+
 // FEATURES
 var numStrokesF = differenceBy(function(s){return(s.strokes.length);},10);
 
@@ -247,7 +250,7 @@ var avgLengthOfStrokesF = differenceBy(function(s){
     for (var i = 0; i < s.strokes.length; i++) {
         sum += s.strokes[i].length;
     }
-    return (sum/s.strokes.length);
+    return (sum/(s.strokes.length+0.01));
 },40);
 
 var logRatioOfShortestAndLongestStrokesF = differenceBy(function(s){
@@ -261,7 +264,7 @@ var logRatioOfShortestAndLongestStrokesF = differenceBy(function(s){
             shortestLength = s.strokes[i].length;
         }
     }
-    return (Math.log2(longestLength/shortestLength));
+    return (Math.log2(longestLength/(shortestLength+0.01))+4);
 },8);
 
 // "stretch" is the distance between the start and end point
@@ -277,7 +280,7 @@ var avgStretchOfStrokesF = differenceBy(function(s){
     for (var i = 0; i < s.strokes.length; i++) {
         sum += stretch(s.strokes[i]);
     }
-    return (sum/s.strokes.length);
+    return (sum/(s.strokes.length+0.01));
 },8);
 
 var logRatioOfMostAndLeastStretchF = differenceBy(function(s){
@@ -292,7 +295,7 @@ var logRatioOfMostAndLeastStretchF = differenceBy(function(s){
             shortestStretch = stretch(s.strokes[i]);
         }
     }
-    return (Math.log2(longestStretch/shortestStretch));
+    return (Math.log2(longestStretch/shortestStretch) + 8);
 },16);
 
 var compareAllLengthsOfStrokesF = arrayDifferenceBy(function(s){
@@ -494,7 +497,7 @@ var curlOflongestStrokeF = differenceBy(function(s){
             longestStroke = s.strokes[i];
         }
     }
-    return getCurl(longestStroke);
+    return getCurl(longestStroke) + Math.PI;
 },6);
 
 var compareAllCurlF = arrayDifferenceBy(function(s){
@@ -502,7 +505,7 @@ var compareAllCurlF = arrayDifferenceBy(function(s){
     for (var i = 0; i < s.strokes.length; i++) {
         curls.push(getCurl(s.strokes[i]));
     }
-    return curls;
+    return curls + Math.PI;
 },6);
 
 var absoluteCurlOflongestStrokeF = differenceBy(function(s){
@@ -515,7 +518,7 @@ var absoluteCurlOflongestStrokeF = differenceBy(function(s){
         }
     }
     return getAbsoluteCurl(longestStroke);
-},400);
+},200);
 
 var compareAllAbsoluteCurlF = arrayDifferenceBy(function(s){
     var curls = [];
@@ -523,7 +526,95 @@ var compareAllAbsoluteCurlF = arrayDifferenceBy(function(s){
         curls.push(getAbsoluteCurl(s.strokes[i]));
     }
     return curls;
+},200);
+
+var avgXF = differenceBy(function(s){
+    var sumX = 0;
+    var nX = 0.01;
+    for (var i = 0; i < s.strokes.length; i++) {
+        for (var j = 0; j < s.strokes[i].length; j++) {
+            sumX += s.strokes[i][j].x;
+            nX += 1;
+        }
+    }
+    return (sumX/nX);
 },400);
+
+var avgYF = differenceBy(function(s){
+    var sumY = 0;
+    var nY = 0.01;
+    for (var i = 0; i < s.strokes.length; i++) {
+        for (var j = 0; j < s.strokes[i].length; j++) {
+            sumY += s.strokes[i][j].y;
+            nY += 1;
+        }
+    }
+    return (sumY/nY);
+},400);
+
+// normalized X and Y means that they're measure only within 
+// the symbol's bounding box. That gives values between 0 and 1.
+
+var normalizedAvgXF = differenceBy(function(s){
+    var sumX = 0;
+    var nX = 0.01;
+    var highestX = 0;
+    var lowestX = s.strokes[0][0].x;
+    
+    for (var i = 0; i < s.strokes.length; i++) {
+        for (var j = 0; j < s.strokes[i].length; j++) {
+            sumX += s.strokes[i][j].x;
+            nX += 1;
+            if (s.strokes[i][j].x > highestX) {
+                highestX = s.strokes[i][j].x;
+            }
+            if (s.strokes[i][j].x < lowestX) {
+                lowestX = s.strokes[i][j].x;
+            }
+        }
+    }
+    return ((sumX/nX - lowestX)/(highestX - lowestX + 0.01));
+},1);
+
+var normalizedAvgYF = differenceBy(function(s){
+    var sumY = 0;
+    var nY = 0.01;
+    var highestY = 0;
+    var lowestY = s.strokes[0][0].y;
+    
+    for (var i = 0; i < s.strokes.length; i++) {
+        for (var j = 0; j < s.strokes[i].length; j++) {
+            sumY += s.strokes[i][j].y;
+            nY += 1;
+            if (s.strokes[i][j].y > highestY) {
+                highestY = s.strokes[i][j].y;
+            }
+            if (s.strokes[i][j].y < lowestY) {
+                lowestY = s.strokes[i][j].y;
+            }
+        }
+    }
+    return ((sumY/nY - lowestY)/(highestY - lowestY + 0.01));
+},1);
+
+var logAspectRatioF = differenceBy(function(s){
+    var highestX = 0;
+    var lowestX = s.strokes[0][0].x;
+    var highestY = 0;
+    var lowestY = s.strokes[0][0].y;
+    
+    for (var i = 0; i < s.strokes.length; i++) {
+        for (var j = 0; j < s.strokes[i].length; j++) {
+            if (s.strokes[i][j].y > highestY) {
+                highestY = s.strokes[i][j].y;
+            }
+            if (s.strokes[i][j].y < lowestY) {
+                lowestY = s.strokes[i][j].y;
+            }
+        }
+    }
+    return (Math.log2(highestY - lowestY/highestX - lowestX + 0.01) + 8);
+},16);
 
 var features = [
     [numStrokesF,1.0]
@@ -546,7 +637,9 @@ var features = [
     ,[compareAllCurlF,1.0]
     ,[absoluteCurlOflongestStrokeF,1.0]
     ,[compareAllAbsoluteCurlF,1.0]
-    ,[compareAllEndYF,1.0]
-    ,[compareAllEndYF,1.0]
-    ,[compareAllEndYF,1.0]
+    ,[avgXF,1.0]
+    ,[avgYF,1.0]
+    ,[normalizedAvgXF,1.0]
+    ,[normalizedAvgYF,1.0]
+    ,[logAspectRatioF,1.0]
     ];
