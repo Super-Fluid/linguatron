@@ -24,3 +24,5 @@ test();
 Separate from the training, which sets the weights of the features
 and language model, you can load some symbols with "load_vocab()" and
 erase all the stored symbols with "clear_vocab()".
+
+Note that "test()" etc do not use anything in the stored vocab.
