@@ -185,7 +185,8 @@ function searchForMatchingSymbols() {
     // now sort the best (highest scoring) stored symbols to the front of the list
     scored.sort(function (a,b) { return (b[1] - a[1]); });
     var nBest = scored.slice(0,NMATCHES);
-    displayedOptionSymbols = nBest; // the perceptron uses this global var
+    displayedOptionSymbols = nBest.map(function(x) {return(x[0]);}); 
+        // the perceptron uses this global var displayedOptionSymbols
     for (index = 0; index < nBest.length; ++index) {
         makeMiniCanvas("option"+index,nBest[index][0],currentSymbol);
     }
@@ -225,6 +226,12 @@ function adjustFeatures(storedSymbol,querySymbol,desiredScore) {
     for (var index = 0; index < len; ++index) {
         var actualScore = features[index][0](storedSymbol,querySymbol) * features[index][1];
         features[index][1] += LEARNING_RATE * (desiredScore - actualScore);
+        // constrain weights to interval [0,1];
+        if (features[index][1] > 1) {
+            features[index][1] = 1;
+        } else if (features[index][1] < 0) {
+            features[index][1] = 0;
+        }
     }
 }
 
@@ -720,7 +727,8 @@ var logAspectRatioF = differenceBy(function(s){
             }
         }
     }
-    return (Math.log2(highestY - lowestY/highestX - lowestX + 0.01));
+    var result = (Math.log2((highestY - lowestY)/(highestX - lowestX + 0.01)));
+    return isNaN(result)?0:result;
 },16);
 
 // features: list of [function from two symbols to a real number, weight]
@@ -789,7 +797,8 @@ function query(currentSymbol) {
     // now sort the best (highest scoring) stored symbols to the front of the list
     scored.sort(function (a,b) { return (b[1] - a[1]); });
     var nBest = scored.slice(0,NMATCHES);
-    displayedOptionSymbols = nBest; // the perceptron uses this global var
+    displayedOptionSymbols = nBest.map(function(x) {return(x[0]);}); 
+        // the perceptron uses this global var displayedOptionSymbols
     trainingQuerySymbol = currentSymbol;
 }
 
@@ -812,7 +821,7 @@ function select(word) {
 
 // pure-ish version of the record-button
 function load(symbol) {
-    storedSymbols.push(symbol,symbol.word);
+    storedSymbols.push(symbol);
 }
 
 function trainOn(data,n) {
