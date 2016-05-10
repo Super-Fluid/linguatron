@@ -318,7 +318,7 @@ function trainTrigram(w) {
 }
 
 function resetTrigram() {
-    unigrams = [];
+    trigrams = [];
     prev_word = "";
     prev_prev_word = "";
 }
@@ -852,6 +852,7 @@ function train(n) {
 }
 
 function reset() {
+    resetLanguageModel();
     var len = features.length;
     for (var index = 0; index < len; ++index) {
         features[index][1] = 1.0;
