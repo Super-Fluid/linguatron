@@ -249,11 +249,11 @@ function adjustFeatures(storedSymbol,querySymbol,desiredScore) {
     for (var index = 0; index < len; ++index) {
         var actualScore = features[index][0](storedSymbol,querySymbol) * features[index][1];
         features[index][1] += LEARNING_RATE * (desiredScore - actualScore);
-        // constrain weights to interval [0,1];
+        // constrain weights to interval [-1,1];
         if (features[index][1] > 1) {
             features[index][1] = 1;
-        } else if (features[index][1] < 0) {
-            features[index][1] = 0;
+        } else if (features[index][1] < -1) {
+            features[index][1] = -1;
         }
     }
 }
