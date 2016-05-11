@@ -92,6 +92,29 @@ function toStrokes(symbol) {
     return strokes;
 }
 
+
+// I only collected the strokes [[point]] for the training
+// data, so to display it I need to convert back to the
+// drags format [(x,y,isDrag)].
+function toDrags(symbol) {
+    symbol.pointsAndDrags = {};
+    symbol.pointsAndDrags.xs = [];
+    symbol.pointsAndDrags.ys = [];
+    symbol.pointsAndDrags.drags = [];
+    for (var i = 0; i < symbol.strokes.length; i++) {
+        for (var j = 0; j < symbol.strokes[i].length; j++) {
+            if (j==0) {
+                symbol.pointsAndDrags.drags.push(false);
+            } else {
+                symbol.pointsAndDrags.drags.push(true);
+            }
+            symbol.pointsAndDrags.xs.push(symbol.strokes[i][j].x);
+            symbol.pointsAndDrags.ys.push(symbol.strokes[i][j].y);
+        }
+    }
+    return symbol;
+}
+
 // create a small canvas showing a symbol and a word
 // you can click on it to select that word
 // modified from code in the main canvas (which I didn't write)
@@ -843,6 +866,7 @@ function load(symbol) {
 }
 
 function trainOn(data,n) {
+    var user_vocab = storedSymbols; // save to restore later
     for (var reps=0; reps<n; reps++) {
         for (var i=0; i<data.length; i++) {
             var thisRun = data[i];
@@ -860,6 +884,7 @@ function trainOn(data,n) {
     storedSymbols = [];
     console.log((reps+1)+"/"+n);
     }
+    storedSymbols = user_vocab;
 }
 
 function loadFrom(data) {
@@ -868,7 +893,7 @@ function loadFrom(data) {
         for (var j=0; j<thisRun.length; j++) {
             var symbol = thisRun[j];
             if (symbol.mode == "create") {
-                load(symbol);
+                load(toDrags(symbol));
             }
         }
     }
