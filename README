@@ -8,7 +8,7 @@ An internet connection is required so it can download jQuery.
 I gathered my training data with "training.html", which works the same way.
 It asks the user to send me an email with the collected data.
 
-When you first open demo.html, it's not trained and works poorly. 
+When you first open demo.html, it's not trained. 
 To train it, open the JavaScript console and enter:
 
 train(25);
