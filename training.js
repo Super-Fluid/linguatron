@@ -6,7 +6,7 @@ var storedSymbols = [];
 
 var symbolMode = "create";
 var symbolWord = "ball";
-var instructions = [
+var instructionsX = [
      ["Create a symbol for a tree.","tree","create"]
     ,["Create a symbol for water.","water","create"]
     ,["Create a symbol for a cat.","cat","create"]
@@ -32,6 +32,23 @@ var instructions = [
     ,["Draw your symbol for a book.","book","reproduce"]
     ,["Draw your symbol for a cat.","cat","reproduce"]
     ].reverse();
+
+// Instructions for my longer data set
+
+var alpha_symbols = "qwertyuiopasdfghjklzxcvbnm,./;'[]\\=-0987654321`~!@#$%^&*()_+{}|\":?><QWERTYUIOPASDFGHJKLZXCVBNM".split("");
+
+function makeCreate(s) {
+    return(["Create "+s,s,"create"]);
+}
+function makeReproduce(s) {
+    return(["Draw "+s,s,"reproduce"]);
+}
+
+var creates = alpha_symbols.map(makeCreate);
+var reproduces = alpha_symbols.map(makeReproduce);
+
+var alpha_instructions = creates.concat(reproduces,reproduces,reproduces,reproduces);
+var instructions = instructionsX; //alpha_instructions.reverse();
 
 var trainingData = [];
 
