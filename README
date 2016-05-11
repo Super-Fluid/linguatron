@@ -9,20 +9,26 @@ I gathered my training data with "training.html", which works the same way.
 It asks the user to send me an email with the collected data.
 
 When you first open demo.html, it's not trained and works poorly. 
-In the JavaScript console, try:
+To train it, open the JavaScript console and enter:
 
-test();
--> 
-train();
-test();
--> 
+train(25);
+or 
+alpha_train(2);
 
-"devtest()" runs the development test.
-"longtest()" runs a test I created with a larger vocabulary.
+You can vary the number of iterations if you like.
+
 "reset()" throws away the training.
 
-Separate from the training, which sets the weights of the features
-and language model, you can load some symbols with "load_vocab()" and
-erase all the stored symbols with "clear_vocab()".
+To perform an automated test, there are three options:
 
-Note that "test()" etc do not use anything in the stored vocab.
+"dev_test()" runs the development test.
+"final_test()" runs a test with a distinct data set.
+"alpha_test()" runs a test I created with a larger vocabulary.
+
+The tests do not use or modify the stored vocab.
+
+To perform an informal manual evaluation, you'll need some vocabulary.
+You may enter it yourself, or load the large vocabulary that was used
+in alpha_train with "load_vocab()".
+
+Erase all the stored symbols with "clear_vocab()".

@@ -929,11 +929,11 @@ function testOn(data) {
         +(first_recalls/total_attempted_recalls));
 }
 
-function devtest() {
+function dev_test() {
     testOn(dev_data);
 }
 
-function test() {
+function final_test() {
     testOn(test_data);
 }
 
